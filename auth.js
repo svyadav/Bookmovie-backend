@@ -43,4 +43,27 @@ let validate = async (req, res, next) => {
   }
 };
 
-module.exports = { hashPassword, hashCompare, createToken, jwtDecode,validate };
+
+const roleAdmin = async (req, res, next) => {
+  if (req.headers && req.headers.authorization) {
+    let token = req.headers.authorization.split(" ")[1];
+    let data = await jwtDecode(token);
+    if (data.role == "admin") next();
+    else {
+      res.send({
+        statusCode: 401,
+        message: "Unauthorized:Only Admin can access",
+      });
+    }
+  }
+  else{
+    res.send({
+      statusCode: 401,
+      message: "Invalid token or no token",
+    });
+
+  }
+ 
+};
+
+module.exports = { hashPassword, hashCompare, createToken, jwtDecode,validate,roleAdmin };
